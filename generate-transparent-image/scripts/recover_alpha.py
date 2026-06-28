@@ -68,6 +68,15 @@ def parse_args() -> argparse.Namespace:
         help="Pixels removed from the opaque-core mask edge before forcing alpha (default: 2).",
     )
     parser.add_argument(
+        "--edge-cleanup",
+        choices=("off", "auto", "aggressive"),
+        default="auto",
+        help=(
+            "Remove panel-border residue from guaranteed blank margins "
+            "(default: auto)."
+        ),
+    )
+    parser.add_argument(
         "--strict",
         action="store_true",
         help="Exit with status 2 when diagnostics grade the recovery as fail.",
@@ -372,20 +381,6 @@ def solve_rgba(
     foreground[alpha < 0.004] = 0.0
     alpha[alpha < 0.002] = 0.0
 
-    # Paired generations occasionally add a one-pixel canvas/seam highlight at
-    # the outer panel edge. Prompts require generous subject padding, so panel
-    # border pixels are guaranteed background and can be cleared safely. This
-    # prevents a thin vertical line from expanding the final content crop.
-    border_guard = max(1, int(round(min(alpha.shape) * 0.003)))
-    alpha[:border_guard] = 0.0
-    alpha[-border_guard:] = 0.0
-    alpha[:, :border_guard] = 0.0
-    alpha[:, -border_guard:] = 0.0
-    foreground[:border_guard] = 0.0
-    foreground[-border_guard:] = 0.0
-    foreground[:, :border_guard] = 0.0
-    foreground[:, -border_guard:] = 0.0
-
     active = valid & (alpha > 0.02)
     opaque_enough = valid & (alpha > 0.10)
     if int(active.sum()) < 16:
@@ -405,6 +400,106 @@ def solve_rgba(
     }
     rgba = np.dstack([foreground, alpha]).astype(np.float32)
     return rgba, residual_norm, metrics
+
+
+def _thin_runs(values: np.ndarray, maximum_width: int) -> list[tuple[int, int]]:
+    """Return half-open runs of true values no wider than maximum_width."""
+    padded = np.pad(values.astype(np.int8), (1, 1))
+    transitions = np.diff(padded)
+    starts = np.flatnonzero(transitions == 1)
+    ends = np.flatnonzero(transitions == -1)
+    return [
+        (int(start), int(end))
+        for start, end in zip(starts, ends)
+        if 0 < end - start <= maximum_width
+    ]
+
+
+def edge_artifact_mask(
+    alpha: np.ndarray, mode: str = "auto"
+) -> tuple[np.ndarray, dict[str, float]]:
+    """Detect frame/seam residue only inside guaranteed blank panel margins.
+
+    Generated paired masters sometimes contain a faint rectangular frame one
+    or two pixels inside a panel. A simple crop keeps that frame because it is
+    non-zero alpha. The prompt protocol requires subject padding, so clearing a
+    narrow outer guard and isolated long straight runs there is safer than
+    eroding the subject matte.
+    """
+    h, w = alpha.shape
+    if mode == "off":
+        return np.zeros((h, w), dtype=bool), {
+            "edge_cleanup_pixels_removed": 0.0,
+            "edge_cleanup_fraction_removed": 0.0,
+            "edge_cleanup_max_alpha_removed": 0.0,
+            "edge_cleanup_line_runs_removed": 0.0,
+            "edge_cleanup_guard_pixels": 0.0,
+        }
+
+    aggressive = mode == "aggressive"
+    short = min(h, w)
+    guard = max(2, int(round(short * (0.025 if aggressive else 0.015))))
+    scan = max(guard + 1, int(round(short * (0.12 if aggressive else 0.08))))
+    scan = min(scan, max(guard + 1, short // 3))
+    weak_limit = 0.10 if aggressive else 0.06
+    occupancy_limit = 0.35 if aggressive else 0.55
+    max_line_width = max(2, int(round(short * (0.020 if aggressive else 0.012))))
+    support = alpha > (0.008 if aggressive else 0.01)
+
+    edge_zone = np.zeros((h, w), dtype=bool)
+    edge_zone[:scan] = True
+    edge_zone[-scan:] = True
+    edge_zone[:, :scan] = True
+    edge_zone[:, -scan:] = True
+
+    removal = np.zeros((h, w), dtype=bool)
+    removal[:guard] = True
+    removal[-guard:] = True
+    removal[:, :guard] = True
+    removal[:, -guard:] = True
+    removal |= edge_zone & (alpha < weak_limit)
+
+    column_occupancy = support.mean(axis=0)
+    row_occupancy = support.mean(axis=1)
+    outer_columns = np.zeros(w, dtype=bool)
+    outer_rows = np.zeros(h, dtype=bool)
+    outer_columns[:scan] = True
+    outer_columns[-scan:] = True
+    outer_rows[:scan] = True
+    outer_rows[-scan:] = True
+
+    line_runs = 0
+    for start, end in _thin_runs(
+        outer_columns & (column_occupancy >= occupancy_limit), max_line_width
+    ):
+        removal[:, start:end] = True
+        line_runs += 1
+    for start, end in _thin_runs(
+        outer_rows & (row_occupancy >= occupancy_limit), max_line_width
+    ):
+        removal[start:end, :] = True
+        line_runs += 1
+
+    removed = removal & (alpha > 0.0)
+    removed_count = int(removed.sum())
+    return removal, {
+        "edge_cleanup_pixels_removed": float(removed_count),
+        "edge_cleanup_fraction_removed": float(removed_count / max(alpha.size, 1)),
+        "edge_cleanup_max_alpha_removed": float(alpha[removed].max())
+        if removed_count
+        else 0.0,
+        "edge_cleanup_line_runs_removed": float(line_runs),
+        "edge_cleanup_guard_pixels": float(guard),
+    }
+
+
+def apply_edge_cleanup(
+    rgba: np.ndarray, mode: str = "auto"
+) -> tuple[np.ndarray, np.ndarray, dict[str, float]]:
+    removal, metrics = edge_artifact_mask(rgba[..., 3], mode)
+    output = rgba.copy()
+    output[removal] = 0.0
+    return output, removal, metrics
 
 
 def parse_aspect(value: str | None) -> float | None:
@@ -695,6 +790,17 @@ def main() -> int:
         )
         metrics.update(material_metrics)
 
+    rgba, edge_removal, edge_metrics = apply_edge_cleanup(rgba, args.edge_cleanup)
+    soft_rgba = soft_rgba.copy()
+    soft_rgba[edge_removal] = 0.0
+    if core_mask is not None:
+        core_mask = core_mask.copy()
+        core_mask[edge_removal] = 0.0
+    if soft_mask is not None:
+        soft_mask = soft_mask.copy()
+        soft_mask[edge_removal] = 0.0
+    metrics.update(edge_metrics)
+
     aspect = parse_aspect(args.aspect)
     bounds = final_canvas_bounds(rgba[..., 3], aspect, args.padding)
     final_rgba = fit_to_bounds(rgba, bounds)
@@ -728,6 +834,7 @@ def main() -> int:
         "panel_size": [panel_width, panel_height],
         "final_size": [int(final_rgba.shape[1]), int(final_rgba.shape[0])],
         "requested_aspect": args.aspect,
+        "edge_cleanup": args.edge_cleanup,
         "estimated_black_rgb": [round(float(x), 6) for x in black],
         "estimated_white_rgb": [round(float(x), 6) for x in white],
         "backdrop_contrast": round(contrast, 6),

@@ -121,7 +121,7 @@ python3 <skill-dir>/scripts/recover_alpha.py \
 
 The script requires Pillow and NumPy. If the active `python3` lacks them, use the bundled workspace Python reported by `codex_app__load_workspace_dependencies`. Do not silently install packages into the user's environment.
 
-Omit `--aspect` when the user did not request one. Accepted forms include `1:1`, `4:5`, `16:9`, or a decimal. The script estimates actual backdrop colors from the border, aligns the right copy to the left, solves alpha against those backdrops, and writes a diagnostic report.
+Omit `--aspect` when the user did not request one. Accepted forms include `1:1`, `4:5`, `16:9`, or a decimal. The script estimates actual backdrop colors from the border, aligns the right copy to the left, solves alpha against those backdrops, and writes a diagnostic report. Its default `--edge-cleanup auto` removes faint frames and seam residue only inside the guaranteed blank panel margin. Use `--edge-cleanup aggressive` when a visible outer line survives; use `off` only when the requested subject intentionally touches the panel edge.
 
 ### 4. Inspect and gate quality
 
@@ -141,6 +141,7 @@ Treat diagnostic metrics as supporting evidence. High values help locate a probl
 - high `foreground_disagreement_p90`: demand the black and white panels differ only in background pixels;
 - clipping or excessive coverage: demand more padding and a smaller centered subject;
 - noisy background alpha: demand perfectly uniform `#000000` and `#FFFFFF` backgrounds.
+- nonzero `edge_cleanup_line_runs_removed`: inspect the outer margin; the script removed one or more long frame/seam traces without eroding the center matte;
 - low `semantic_support_recall`: demand masks cover every retained core and soft region;
 - high `core_outside_pair_support_fraction`: demand identical mask geometry and placement;
 - high `core_soft_overlap_fraction`: separate solid regions from intended translucent effects.
@@ -167,4 +168,4 @@ C0 = alpha * F + (1 - alpha) * B0
 C1 = alpha * F + (1 - alpha) * B1
 ```
 
-The script estimates `B0` and `B1` from the image border and solves the shared scalar alpha by least squares across RGB. For material-aware 2x2 inputs it registers the semantic masks, erodes the opaque-core boundary, forces only safe solid interiors to alpha 1, and replaces their RGB with the aligned black/white panel average. Soft effects retain pair-recovered alpha. Generative panels are rarely pixel-perfect, so diagnostics are intentionally tolerant and adversarial-background inspection is the final gate.
+The script estimates `B0` and `B1` from the image border and solves the shared scalar alpha by least squares across RGB. It then clears the guaranteed blank outer guard, suppresses weak edge-band noise, and removes only thin long frame/seam runs near panel boundaries. For material-aware 2x2 inputs it registers the semantic masks, erodes the opaque-core boundary, forces only safe solid interiors to alpha 1, and replaces their RGB with the aligned black/white panel average. Soft effects retain pair-recovered alpha. Generative panels are rarely pixel-perfect, so diagnostics are intentionally tolerant and adversarial-background inspection is the final gate.

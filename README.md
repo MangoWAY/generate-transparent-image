@@ -4,7 +4,7 @@ A Codex skill for creating straight-alpha PNG assets from text prompts or refere
 
 It renders the subject over black and white in one generated master, aligns both copies, solves alpha locally, and validates the result on checker, black, white, green, and magenta backgrounds. Mixed assets can use a material-aware 2×2 master with separate opaque-core and soft-effect masks.
 
-Status: `v0.2.0-beta`
+Status: `v0.2.1-beta`
 
 ## Install
 
@@ -46,6 +46,8 @@ Each run preserves the generated master, normalized prompt, alpha matte, checker
 | Material 2×2 | black + white + opaque-core mask + soft-effect mask | characters or products mixed with smoke, ink, glow, or sheer material |
 
 The 2×2 mode forces only safe solid interiors to alpha 1. Soft-effect regions retain the alpha recovered from the black/white pair.
+
+Recovery also removes faint panel frames and seam residue from the guaranteed blank outer margin. Use `--edge-cleanup aggressive` only when a visible edge line survives the default automatic pass.
 
 ## Examples
 
@@ -141,7 +143,7 @@ python3 generate-transparent-image/scripts/recover_alpha.py \
 python3 -m unittest discover -s generate-transparent-image/tests -v
 ```
 
-The current suite covers paired recovery, material 2×2 recovery, opaque-core correction, soft-effect priority, mask registration, and CLI outputs.
+The current suite covers paired recovery, material 2×2 recovery, opaque-core correction, soft-effect priority, mask registration, edge-frame cleanup, and CLI outputs.
 
 ## Limits
 

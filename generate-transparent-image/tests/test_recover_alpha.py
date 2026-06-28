@@ -36,6 +36,33 @@ def synthetic_subject(size: int = 72) -> tuple[np.ndarray, np.ndarray, np.ndarra
 
 
 class MaterialAwareRecoveryTests(unittest.TestCase):
+    def test_edge_cleanup_removes_panel_frame_without_eroding_subject(self) -> None:
+        size = 160
+        rgba = np.zeros((size, size, 4), dtype=np.float32)
+        rgba[45:120, 58:104, :3] = np.array([0.8, 0.4, 0.2], dtype=np.float32)
+        rgba[45:120, 58:104, 3] = 0.75
+        rgba[2, :, 3] = 0.05
+        rgba[:, 3, 3] = 0.07
+        rgba[:, -4, 3] = 0.42
+
+        cleaned, removed, metrics = RECOVER.apply_edge_cleanup(rgba, "auto")
+
+        self.assertTrue(np.all(cleaned[2, :, 3] == 0.0))
+        self.assertTrue(np.all(cleaned[:, 3, 3] == 0.0))
+        self.assertTrue(np.all(cleaned[:, -4, 3] == 0.0))
+        self.assertTrue(np.allclose(cleaned[45:120, 58:104], rgba[45:120, 58:104]))
+        self.assertTrue(np.all(removed[:, -4]))
+        self.assertGreaterEqual(metrics["edge_cleanup_line_runs_removed"], 1.0)
+        self.assertGreater(metrics["edge_cleanup_max_alpha_removed"], 0.4)
+
+    def test_edge_cleanup_can_be_disabled(self) -> None:
+        rgba = np.zeros((64, 64, 4), dtype=np.float32)
+        rgba[:, 1, 3] = 0.3
+        cleaned, removed, metrics = RECOVER.apply_edge_cleanup(rgba, "off")
+        self.assertTrue(np.array_equal(cleaned, rgba))
+        self.assertFalse(removed.any())
+        self.assertEqual(metrics["edge_cleanup_pixels_removed"], 0.0)
+
     def test_core_is_forced_opaque_while_soft_effect_stays_soft(self) -> None:
         left, right, core, effect = synthetic_subject()
         valid = np.ones(core.shape, dtype=bool)
@@ -108,6 +135,7 @@ class MaterialAwareRecoveryTests(unittest.TestCase):
             report = json.loads((root / "report.json").read_text(encoding="utf-8"))
             self.assertEqual(report["layout"], "material-2x2")
             self.assertEqual(report["core_alpha_p05_after"], 1.0)
+            self.assertEqual(report["edge_cleanup"], "auto")
             for name in [
                 "transparent.png",
                 "alpha.png",
