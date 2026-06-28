@@ -1,0 +1,16 @@
+Asset type: transparent cutout source pair
+Primary request: A cute, photorealistic young orange tabby cat sitting upright and facing slightly toward the camera, with large warm amber eyes, a gentle curious expression, small rounded paws together, soft fluffy short-to-medium fur, natural orange and cream stripes, detailed whiskers, and both ears fully visible. Full body including the curled tail, anatomically believable, studio-quality natural lighting, realistic fur detail. No collar, clothing, props, floor, or text.
+Reference images: none
+Final transparent canvas ratio: match source panel
+
+Paired-source construction:
+Create one opaque technical two-panel source image. Split the canvas vertically at exactly 50%.
+The entire left half must be perfectly uniform pure black #000000.
+The entire right half must be perfectly uniform pure white #FFFFFF.
+There is no gutter, divider, border, frame, label, caption, or margin between the halves.
+
+Place one complete copy of the requested cat centered in each half. The right cat must be an exact duplicate of the left cat: identical pose, expression, silhouette, scale, position relative to its panel, camera, perspective, anatomy, fur geometry, stripe pattern, whiskers, fine detail, lighting, opacity, and RGB color. Only the background changes.
+
+Treat black and white as flat digital compositing layers, not physical environments. They must not illuminate, tint, recolor, reflect in, spill onto, rim-light, or change the exposure or contrast of the cat. Preserve natural fur colors identically on both sides.
+
+Keep generous clear padding around both copies. No clipping of ears, whiskers, paws, fur, or tail. No floor plane, cast shadow, contact shadow, reflection, atmospheric background, watermark, signature, or text.

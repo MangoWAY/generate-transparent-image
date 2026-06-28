@@ -1,0 +1,18 @@
+Asset type: material-aware transparent cutout source master
+Primary request: An original fantasy game character asset: a young female storm sorceress in a full-body three-quarter standing pose, wearing a solid dark navy and silver combat robe with leather boots, metal shoulder armor, belt ornaments, and holding a silver staff. A flowing ring of translucent blue-violet magical smoke, wind ribbons, small sparks, and soft cyan glow curls around and behind her without covering the face. Polished high-detail fantasy illustration, readable silhouette, no existing franchise identity, no text, no UI frame.
+Reference images: none
+Final transparent canvas ratio: match source panel
+
+Opacity plan:
+Opaque core: face, skin, solid hair masses, combat robe, boots, leather, metal armor, belt ornaments, hands, and silver staff.
+Soft effects: hair fringe, flyaway strands, translucent blue-violet smoke, wind ribbons, sparks, cyan glow, and antialiased outer boundaries.
+Remove: all scene background, floor, shadows, scenery, labels, and text.
+
+Material-aware 2x2 construction:
+Create one opaque square technical source image divided into four exactly equal quadrants, with no gutter, divider, border, frame, label, caption, or margin.
+Top-left: complete retained subject over perfectly uniform pure black #000000.
+Top-right: the exact same retained subject over perfectly uniform pure white #FFFFFF.
+Bottom-left: opaque-core semantic mask only, pure white #FFFFFF for fully solid regions and pure black #000000 everywhere else.
+Bottom-right: soft-effect semantic mask only, pure white #FFFFFF for retained translucent effects and fine soft boundaries and pure black #000000 everywhere else.
+
+Construct the subject once and reuse identical geometry in all four quadrants. Lock identity, face, pose, silhouette, scale, panel-relative coordinates, camera, anatomy, costume, staff, every smoke curl, ribbon, spark, and glow. Top panels differ only in background pixels. Bottom masks match the same geometry with no texture, gray shading, shadow, holes, labels, or decoration. Backgrounds do not illuminate, tint, spill, reflect, rim-light, or alter exposure. Generous identical padding; no clipping, floor, shadow, reflection, scene, watermark, signature, or text. Keep opaque; do not output transparency.
