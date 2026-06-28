@@ -1,4 +1,4 @@
 interface:
   display_name: "Generate Transparent Image"
-  short_description: "Create editable transparent PNGs from prompts or references"
-  default_prompt: "Use $generate-transparent-image to create and preserve an editable transparent PNG from my prompt or reference image."
+  short_description: "Create material-aware transparent PNGs from prompts or references"
+  default_prompt: "Use $generate-transparent-image to create and preserve an editable transparent PNG, choosing paired or material-aware 2x2 recovery for my prompt or reference image."
