@@ -51,19 +51,21 @@ Recovery also removes faint panel frames and seam residue from the guaranteed bl
 
 ## Examples
 
-### Prompt-to-asset gallery
+### Final-effect gallery
 
-Click a preview for the transparent PNG; the prompt and technical master are linked below each image.
+All seven visual cases are shown here. Click an effect preview for the final transparent PNG; prompts, technical masters, reports, and source licenses are linked below each image.
 
 <table>
   <tr>
-    <td align="center"><a href="docs/examples/cat/transparent.png"><img src="docs/examples/cat/preview.png" width="190" alt="Orange cat cutout"></a><br><b>Fur</b><br><a href="docs/examples/cat/prompt.txt">prompt</a> · <a href="docs/examples/cat/master.png">master</a></td>
-    <td align="center"><a href="docs/examples/flame/transparent.png"><img src="docs/examples/flame/preview.png" width="190" alt="Flame cutout"></a><br><b>Fire</b><br><a href="docs/examples/flame/prompt.txt">prompt</a> · <a href="docs/examples/flame/master.png">master</a></td>
-    <td align="center"><a href="docs/examples/glass/transparent.png"><img src="docs/examples/glass/preview.png" width="190" alt="Glass potion bottle cutout"></a><br><b>Glass + liquid</b><br><a href="docs/examples/glass/prompt.txt">prompt</a> · <a href="docs/examples/glass/master.png">master</a></td>
+    <td align="center"><a href="docs/examples/cat/transparent.png"><img src="docs/examples/cat/preview.png" width="160" alt="Orange cat cutout effect"></a><br><b>Fur</b><br><a href="docs/examples/cat/prompt.txt">prompt</a> · <a href="docs/examples/cat/master.png">master</a></td>
+    <td align="center"><a href="docs/examples/flame/transparent.png"><img src="docs/examples/flame/preview.png" width="160" alt="Flame cutout effect"></a><br><b>Fire</b><br><a href="docs/examples/flame/prompt.txt">prompt</a> · <a href="docs/examples/flame/master.png">master</a></td>
+    <td align="center"><a href="docs/examples/glass/transparent.png"><img src="docs/examples/glass/preview.png" width="160" alt="Glass potion bottle cutout effect"></a><br><b>Glass + liquid</b><br><a href="docs/examples/glass/prompt.txt">prompt</a> · <a href="docs/examples/glass/master.png">master</a></td>
+    <td align="center"><a href="docs/examples/smoke/transparent.png"><img src="docs/examples/smoke/preview.png" width="160" alt="Blue-purple smoke cutout effect"></a><br><b>Smoke</b><br><a href="docs/examples/smoke/prompt.txt">prompt</a> · <a href="docs/examples/smoke/master.png">master</a></td>
   </tr>
   <tr>
-    <td align="center"><a href="docs/examples/smoke/transparent.png"><img src="docs/examples/smoke/preview.png" width="190" alt="Blue-purple smoke cutout"></a><br><b>Smoke</b><br><a href="docs/examples/smoke/prompt.txt">prompt</a> · <a href="docs/examples/smoke/master.png">master</a></td>
-    <td align="center"><a href="docs/examples/sorceress/transparent.png"><img src="docs/examples/sorceress/preview.png" width="190" alt="Sorceress and translucent magic cutout"></a><br><b>Opaque + soft 2×2</b><br><a href="docs/examples/sorceress/prompt.txt">prompt</a> · <a href="docs/examples/sorceress/master.png">master</a> · <a href="docs/examples/sorceress/opaque-core-mask.png">masks</a></td>
+    <td align="center"><a href="docs/examples/sorceress/transparent.png"><img src="docs/examples/sorceress/preview.png" width="160" alt="Sorceress and translucent magic cutout effect"></a><br><b>Opaque + soft 2×2</b><br><a href="docs/examples/sorceress/prompt.txt">prompt</a> · <a href="docs/examples/sorceress/master.png">master</a> · <a href="docs/examples/sorceress/opaque-core-mask.png">masks</a></td>
+    <td align="center"><a href="docs/examples/reference-turaco/transparent.png"><img src="docs/examples/reference-turaco/preview.png" width="160" alt="Turaco reference extraction effect"></a><br><b>Reference: feathers</b><br><a href="docs/examples/reference-turaco/prompt.txt">prompt</a> · <a href="docs/examples/reference-turaco/report.json">report</a> · <a href="docs/examples/reference-turaco/SOURCE.md">license</a></td>
+    <td align="center"><a href="docs/examples/reference-glass-bottle/transparent.png"><img src="docs/examples/reference-glass-bottle/preview.png" width="160" alt="Etched glass reference extraction effect"></a><br><b>Reference: clear glass</b><br><a href="docs/examples/reference-glass-bottle/prompt.txt">prompt</a> · <a href="docs/examples/reference-glass-bottle/report.json">report</a> · <a href="docs/examples/reference-glass-bottle/SOURCE.md">license</a></td>
     <td></td>
   </tr>
 </table>
@@ -73,18 +75,18 @@ Click a preview for the transparent PNG; the prompt and technical master are lin
 These cases start from freely licensed photographs found online, then rebuild a controlled master before alpha recovery. They test the same workflow as character extraction without adding an unlicensed commercial-character image to the repository.
 
 <table>
-  <tr><th>Case</th><th>Reference</th><th>Technical master</th><th>Recovered preview</th></tr>
+  <tr><th>Case</th><th>Reference</th><th>Technical master</th><th>Validation effect</th></tr>
   <tr>
     <td><b>Feather detail</b><br>material 2×2<br><a href="docs/examples/reference-turaco/prompt.txt">prompt</a> · <a href="docs/examples/reference-turaco/report.json">report</a> · <a href="docs/examples/reference-turaco/SOURCE.md">source/license</a></td>
     <td><img src="docs/examples/reference-turaco/reference.jpg" width="150" alt="Reference photo of a red-crested turaco"></td>
     <td><a href="docs/examples/reference-turaco/master.png"><img src="docs/examples/reference-turaco/master.png" width="190" alt="Turaco 2 by 2 technical master"></a></td>
-    <td><a href="docs/examples/reference-turaco/transparent.png"><img src="docs/examples/reference-turaco/preview.png" width="150" alt="Recovered turaco on checkerboard"></a></td>
+    <td><a href="docs/examples/reference-turaco/transparent.png"><img src="docs/examples/reference-turaco/preview-grid.png" width="260" alt="Turaco recovered on checkerboard, black, white, green, and magenta backgrounds with alpha matte"></a></td>
   </tr>
   <tr>
     <td><b>Clear etched glass</b><br>paired<br><a href="docs/examples/reference-glass-bottle/prompt.txt">prompt</a> · <a href="docs/examples/reference-glass-bottle/report.json">report</a> · <a href="docs/examples/reference-glass-bottle/SOURCE.md">source/license</a></td>
     <td><img src="docs/examples/reference-glass-bottle/reference.jpg" width="150" alt="Reference photo of an etched drinking glass"></td>
     <td><a href="docs/examples/reference-glass-bottle/master.png"><img src="docs/examples/reference-glass-bottle/master.png" width="190" alt="Glass black and white technical master"></a></td>
-    <td><a href="docs/examples/reference-glass-bottle/transparent.png"><img src="docs/examples/reference-glass-bottle/preview.png" width="150" alt="Recovered glass on checkerboard"></a></td>
+    <td><a href="docs/examples/reference-glass-bottle/transparent.png"><img src="docs/examples/reference-glass-bottle/preview-grid.png" width="260" alt="Glass recovered on checkerboard, black, white, green, and magenta backgrounds with alpha matte"></a></td>
   </tr>
 </table>
 
