@@ -507,10 +507,16 @@ def parse_aspect(value: str | None) -> float | None:
         return None
     if ":" in value:
         left, right = value.split(":", 1)
-        ratio = float(left) / float(right)
+        numerator, denominator = float(left), float(right)
+        if denominator == 0:
+            raise ValueError("aspect ratio denominator must not be zero")
+        ratio = numerator / denominator
     elif "/" in value:
         left, right = value.split("/", 1)
-        ratio = float(left) / float(right)
+        numerator, denominator = float(left), float(right)
+        if denominator == 0:
+            raise ValueError("aspect ratio denominator must not be zero")
+        ratio = numerator / denominator
     else:
         ratio = float(value)
     if not math.isfinite(ratio) or ratio <= 0 or ratio > 20:

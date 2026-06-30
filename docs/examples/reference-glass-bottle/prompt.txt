@@ -1,0 +1,8 @@
+Asset type: transparent cutout source pair
+Primary request: extract only the empty clear drinking glass from the reference photograph and remove the tablecloth and complete environment. Preserve its tapered cylindrical shape, thick circular rim, transparent walls, etched floral decoration, heavy base, viewpoint, proportions, glass color, highlights, refraction character, and visible imperfections.
+Reference image: reference.jpg — identity and geometry reference; Wikimedia Commons CC0 source documented in SOURCE.md.
+Final transparent canvas ratio: 4:5
+
+Create one opaque technical two-panel source image split vertically at exactly 50%. The left half is uniform pure black #000000 and the right half is uniform pure white #FFFFFF, with no gutter, divider, border, frame, label, caption, or margin.
+
+Place one complete copy in each half. The right glass is an exact duplicate of the left: identical silhouette, scale, panel-relative position, camera, perspective, geometry, etched pattern, highlights, refraction structure, opacity, and RGB color. Only the flat background changes. Backgrounds must not illuminate, tint, recolor, spill onto, rim-light, reflect in, or change the exposure or contrast of the glass. Keep generous identical padding. No clipping, floor, cast shadow, contact shadow, reflection, watermark, signature, or text.

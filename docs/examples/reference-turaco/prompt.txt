@@ -1,0 +1,13 @@
+Asset type: material-aware transparent cutout source master
+Primary request: extract only the red-crested turaco from the reference photograph, remove the complete environment, and reconstruct the complete tail while preserving identity, pose, viewpoint, proportions, colors, and feather detail.
+Reference image: reference.jpg — identity and geometry reference; Wikimedia Commons CC0 source documented in SOURCE.md.
+Final transparent canvas ratio: 3:4
+
+Opacity plan:
+Opaque core: beak, eye, solid body, wings, legs, feet, and solid interior feather masses.
+Soft effects: fine feather fringe, crest tips, and antialiased outer feather edges.
+Remove: every branch, leaf, cage, wall, floor, shadow, and all other scene content.
+
+Create one opaque square technical source image divided into four exactly equal quadrants, with no gutter, divider, border, frame, label, caption, or margin. Top-left is the complete bird over uniform pure black #000000. Top-right is the exact same bird over uniform pure white #FFFFFF. Bottom-left is a pure white opaque-core semantic mask over pure black. Bottom-right is a pure white soft-effect semantic mask over pure black.
+
+Construct the bird once and reuse identical geometry in every quadrant. Lock identity, pose, silhouette, scale, panel-relative coordinates, camera, anatomy, feather placement, colors, and every fine detail. Top panels differ only in background pixels. Flat backgrounds must not tint, illuminate, reflect in, rim-light, or alter the bird. Masks match the top-panel geometry without gray shading, texture, shadows, labels, or decoration. Keep generous identical padding; no clipping, perch, cast shadow, reflection, watermark, signature, or text.

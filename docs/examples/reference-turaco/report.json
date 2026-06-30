@@ -1,0 +1,63 @@
+{
+  "input": "docs/examples/reference-turaco/master.png",
+  "output": "docs/examples/reference-turaco/transparent.png",
+  "layout": "material-2x2",
+  "source_size": [
+    1254,
+    1254
+  ],
+  "panel_size": [
+    627,
+    627
+  ],
+  "final_size": [
+    569,
+    759
+  ],
+  "requested_aspect": "3:4",
+  "edge_cleanup": "auto",
+  "estimated_black_rgb": [
+    0.0,
+    0.0,
+    0.0
+  ],
+  "estimated_white_rgb": [
+    0.996078,
+    0.996078,
+    0.996078
+  ],
+  "backdrop_contrast": 1.725258,
+  "alignment_translation": {
+    "x": 12,
+    "y": 0
+  },
+  "registration_score": 0.010543,
+  "semantic_mask_alignment_translation": {
+    "x": 3,
+    "y": -1
+  },
+  "semantic_mask_registration_score": 0.054463,
+  "opaque_core_mask_contrast": 0.994771,
+  "soft_effect_mask_contrast": 0.975163,
+  "residual_p50": 0.009335,
+  "residual_p95": 0.064239,
+  "foreground_disagreement_p90": 0.047168,
+  "invalid_transmission_fraction": 0.03926,
+  "foreground_coverage": 0.230837,
+  "core_mask_coverage": 0.178265,
+  "soft_mask_coverage": 0.024404,
+  "core_low_alpha_fraction_before": 0.266306,
+  "core_low_alpha_fraction_after": 0.0,
+  "core_alpha_p05_before": 0.930446,
+  "core_alpha_p05_after": 1.0,
+  "core_outside_pair_support_fraction": 0.000228,
+  "semantic_support_recall": 0.882443,
+  "core_soft_overlap_fraction": 0.048384,
+  "edge_cleanup_pixels_removed": 54235.0,
+  "edge_cleanup_fraction_removed": 0.137957,
+  "edge_cleanup_max_alpha_removed": 0.998688,
+  "edge_cleanup_line_runs_removed": 3.0,
+  "edge_cleanup_guard_pixels": 9.0,
+  "grade": "pass",
+  "issues": []
+}

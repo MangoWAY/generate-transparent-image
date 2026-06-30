@@ -1,0 +1,51 @@
+{
+  "input": "docs/examples/reference-glass-bottle/master.png",
+  "output": "docs/examples/reference-glass-bottle/transparent.png",
+  "layout": "paired",
+  "source_size": [
+    1560,
+    1007
+  ],
+  "panel_size": [
+    780,
+    1007
+  ],
+  "final_size": [
+    763,
+    953
+  ],
+  "requested_aspect": "4:5",
+  "edge_cleanup": "auto",
+  "estimated_black_rgb": [
+    0.0,
+    0.0,
+    0.0
+  ],
+  "estimated_white_rgb": [
+    0.996078,
+    0.996078,
+    0.996078
+  ],
+  "backdrop_contrast": 1.725258,
+  "alignment_translation": {
+    "x": 14,
+    "y": -4
+  },
+  "registration_score": 0.004742,
+  "semantic_mask_alignment_translation": null,
+  "semantic_mask_registration_score": null,
+  "opaque_core_mask_contrast": null,
+  "soft_effect_mask_contrast": null,
+  "residual_p50": 0.003202,
+  "residual_p95": 0.017828,
+  "foreground_disagreement_p90": 0.016491,
+  "invalid_transmission_fraction": 0.010776,
+  "foreground_coverage": 0.292747,
+  "edge_cleanup_pixels_removed": 63984.0,
+  "edge_cleanup_fraction_removed": 0.081461,
+  "edge_cleanup_max_alpha_removed": 0.325459,
+  "edge_cleanup_line_runs_removed": 4.0,
+  "edge_cleanup_guard_pixels": 12.0,
+  "grade": "pass",
+  "issues": []
+}

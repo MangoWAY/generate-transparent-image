@@ -35,7 +35,141 @@ def synthetic_subject(size: int = 72) -> tuple[np.ndarray, np.ndarray, np.ndarra
     return left, right, core.astype(np.float32), effect.astype(np.float32)
 
 
-class MaterialAwareRecoveryTests(unittest.TestCase):
+class RecoveryTests(unittest.TestCase):
+    def test_partial_alpha_color_is_recovered_without_white_fringe(self) -> None:
+        size = 96
+        yy, xx = np.indices((size, size))
+        distance = np.sqrt((xx - 48) ** 2 + (yy - 48) ** 2)
+        alpha = np.clip((34.0 - distance) / 8.0, 0.0, 1.0).astype(np.float32)
+        foreground = np.zeros((size, size, 3), dtype=np.float32)
+        foreground[..., 0] = 0.88
+        foreground[..., 1] = 0.17 + 0.25 * (xx / size)
+        foreground[..., 2] = 0.08 + 0.35 * (yy / size)
+        black = np.array([0.01, 0.02, 0.03], dtype=np.float32)
+        white = np.array([0.96, 0.97, 0.98], dtype=np.float32)
+        transmission = 1.0 - alpha[..., None]
+        left = alpha[..., None] * foreground + transmission * black
+        right = alpha[..., None] * foreground + transmission * white
+
+        rgba, _residual, metrics = RECOVER.solve_rgba(
+            left, right, np.ones(alpha.shape, dtype=bool), black, white
+        )
+
+        edge = (alpha > 0.05) & (alpha < 0.95)
+        self.assertLess(float(np.max(np.abs(rgba[..., 3][edge] - alpha[edge]))), 1e-5)
+        self.assertLess(
+            float(np.max(np.abs(rgba[..., :3][edge] - foreground[edge]))), 1e-4
+        )
+        dark = np.full((size, size, 3), 0.04, dtype=np.float32)
+        expected = foreground * alpha[..., None] + dark * (1.0 - alpha[..., None])
+        actual = RECOVER.composite_over(rgba, dark)
+        self.assertLess(float(np.max(np.abs(actual[edge] - expected[edge]))), 1e-4)
+        self.assertLess(metrics["residual_p95"], 1e-5)
+
+    def test_translation_alignment_recovers_shifted_pair(self) -> None:
+        size = 96
+        yy, xx = np.indices((size, size))
+        alpha = np.clip(
+            (30.0 - np.sqrt((xx - 48) ** 2 + (yy - 48) ** 2)) / 4.0,
+            0.0,
+            1.0,
+        ).astype(np.float32)
+        foreground = np.dstack(
+            [
+                0.2 + 0.7 * xx / size,
+                0.1 + 0.8 * yy / size,
+                0.5 + 0.25 * np.sin(xx / 3.0),
+            ]
+        ).astype(np.float32)
+        left = alpha[..., None] * foreground
+        right = alpha[..., None] * foreground + (1.0 - alpha[..., None])
+        white = np.ones(3, dtype=np.float32)
+        shifted_right, _valid = RECOVER.shifted(right, 4, -3, white)
+        dx, dy, score = RECOVER.find_translation(
+            left,
+            shifted_right,
+            np.zeros(3, dtype=np.float32),
+            white,
+            max_shift_fraction=0.10,
+        )
+        self.assertEqual((dx, dy), (-4, 3))
+        self.assertLess(score, 0.01)
+
+    def test_aspect_ratio_validation_rejects_zero_and_extreme_values(self) -> None:
+        for value in ["1:0", "1/0", "0:1", "21:1", "nan", "inf"]:
+            with self.subTest(value=value), self.assertRaises(ValueError):
+                RECOVER.parse_aspect(value)
+        self.assertAlmostEqual(RECOVER.parse_aspect("16:9"), 16 / 9)
+        self.assertAlmostEqual(RECOVER.parse_aspect("4/5"), 0.8)
+
+    def test_final_canvas_preserves_content_and_exact_requested_ratio(self) -> None:
+        rgba = np.zeros((80, 100, 4), dtype=np.float32)
+        rgba[20:60, 35:65, :3] = np.array([0.9, 0.2, 0.1], dtype=np.float32)
+        rgba[20:60, 35:65, 3] = 1.0
+        final = RECOVER.fit_final_canvas(rgba, 16 / 9, padding=0.10)
+        self.assertLessEqual(abs(final.shape[1] - final.shape[0] * 16 / 9), 1.0)
+        self.assertEqual(int((final[..., 3] > 0.5).sum()), 40 * 30)
+        self.assertTrue(np.all(final[0, :, 3] == 0.0))
+        self.assertTrue(np.all(final[-1, :, 3] == 0.0))
+
+    def test_low_contrast_semantic_mask_is_rejected(self) -> None:
+        mask = np.full((64, 64, 3), 0.42, dtype=np.float32)
+        mask[20:44, 20:44] = 0.50
+        with self.assertRaisesRegex(ValueError, "lacks a clear white-on-black signal"):
+            RECOVER.decode_semantic_mask(mask)
+
+    def test_strict_cli_rejects_non_black_white_backdrops(self) -> None:
+        master = np.full((64, 128, 3), 0.45, dtype=np.float32)
+        master[:, 64:] = 0.55
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            source = root / "bad-backdrops.png"
+            Image.fromarray(RECOVER.to_u8(master), "RGB").save(source)
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT),
+                    "--input",
+                    str(source),
+                    "--output",
+                    str(root / "out.png"),
+                    "--strict",
+                ],
+                capture_output=True,
+                text=True,
+            )
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("not sufficiently black and white", result.stderr)
+
+    def test_cli_crops_one_pixel_export_discrepancy(self) -> None:
+        left, right, _core, _effect = synthetic_subject(72)
+        master = np.concatenate([left, right], axis=1)
+        master = np.pad(master, ((0, 0), (0, 1), (0, 0)), constant_values=1.0)
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            source = root / "odd-width.png"
+            report_path = root / "report.json"
+            Image.fromarray(RECOVER.to_u8(master), "RGB").save(source)
+            subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT),
+                    "--input",
+                    str(source),
+                    "--output",
+                    str(root / "transparent.png"),
+                    "--report-out",
+                    str(report_path),
+                    "--no-align",
+                ],
+                check=True,
+                capture_output=True,
+                text=True,
+            )
+            report = json.loads(report_path.read_text(encoding="utf-8"))
+            self.assertEqual(report["source_size"], [144, 72])
+            self.assertEqual(report["panel_size"], [72, 72])
+
     def test_edge_cleanup_removes_panel_frame_without_eroding_subject(self) -> None:
         size = 160
         rgba = np.zeros((size, size, 4), dtype=np.float32)
