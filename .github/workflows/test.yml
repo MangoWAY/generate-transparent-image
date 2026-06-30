@@ -16,5 +16,5 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - run: python -m pip install -r requirements.txt
-      - run: python -m py_compile generate-transparent-image/scripts/recover_alpha.py
-      - run: python -m unittest discover -s generate-transparent-image/tests -v
+      - run: python -m py_compile plugins/generate-transparent-image/skills/generate-transparent-image/scripts/recover_alpha.py
+      - run: python -m unittest discover -s plugins/generate-transparent-image/skills/generate-transparent-image/tests -v

@@ -1,2 +1,1 @@
-numpy>=1.24
-Pillow>=10.0
+-r plugins/generate-transparent-image/skills/generate-transparent-image/requirements.txt

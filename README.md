@@ -4,22 +4,42 @@ A Codex skill for creating straight-alpha PNG assets from text prompts or refere
 
 It renders the subject over black and white in one generated master, aligns both copies, solves alpha locally, and validates the result on checker, black, white, green, and magenta backgrounds. Mixed assets can use a material-aware 2×2 master with separate opaque-core and soft-effect masks.
 
-Status: `v0.2.1-beta`
+Status: `v0.2.2-beta.1`
 
 ## Install
 
+### Codex plugin — recommended
+
+Install the repository as a Codex marketplace, then install the plugin:
+
+```bash
+codex plugin marketplace add MangoWAY/generate-transparent-image
+codex plugin add generate-transparent-image@generate-transparent-image
+```
+
+The plugin bundles the Skill but does not modify your Python environment. Install the two recovery dependencies into the Python environment used by Codex, then start a new thread:
+
+```bash
+python3 -m pip install "numpy>=1.24" "Pillow>=10.0"
+```
+
+### Standalone Skill
+
+If you do not want the plugin wrapper, copy the Skill directly to the current Codex user-level Skill directory:
+
 ```bash
 git clone https://github.com/MangoWAY/generate-transparent-image.git
-mkdir -p "${CODEX_HOME:-$HOME/.codex}/skills"
-cp -R generate-transparent-image/generate-transparent-image \
-  "${CODEX_HOME:-$HOME/.codex}/skills/"
-```
-
-The local recovery script requires Python 3, Pillow, and NumPy:
-
-```bash
+cd generate-transparent-image
 python3 -m pip install -r requirements.txt
+mkdir -p "$HOME/.agents/skills"
+cp -R plugins/generate-transparent-image/skills/generate-transparent-image \
+  "$HOME/.agents/skills/"
 ```
+
+Codex detects Skill changes automatically. Restart Codex if `$generate-transparent-image` does not appear.
+
+You can also ask Codex to use `$skill-installer` with the standalone Skill URL:
+`https://github.com/MangoWAY/generate-transparent-image/tree/main/plugins/generate-transparent-image/skills/generate-transparent-image`.
 
 ## Use
 
@@ -97,7 +117,7 @@ Both reference images are CC0: the turaco photo is by Cat Lee Ball and the glass
 Paired master:
 
 ```bash
-python3 generate-transparent-image/scripts/recover_alpha.py \
+python3 plugins/generate-transparent-image/skills/generate-transparent-image/scripts/recover_alpha.py \
   --input source-pair.png \
   --output transparent.png \
   --alpha-out alpha.png \
@@ -110,7 +130,7 @@ python3 generate-transparent-image/scripts/recover_alpha.py \
 Material-aware 2×2 master:
 
 ```bash
-python3 generate-transparent-image/scripts/recover_alpha.py \
+python3 plugins/generate-transparent-image/skills/generate-transparent-image/scripts/recover_alpha.py \
   --layout material-2x2 \
   --input source-2x2.png \
   --output transparent.png \
@@ -127,10 +147,11 @@ python3 generate-transparent-image/scripts/recover_alpha.py \
 ## Test
 
 ```bash
-python3 -m unittest discover -s generate-transparent-image/tests -v
+python3 -m unittest discover \
+  -s plugins/generate-transparent-image/skills/generate-transparent-image/tests -v
 ```
 
-All cases live in [`test_recover_alpha.py`](generate-transparent-image/tests/test_recover_alpha.py):
+All cases live in [`test_recover_alpha.py`](plugins/generate-transparent-image/skills/generate-transparent-image/tests/test_recover_alpha.py):
 
 | # | Case | Regression covered |
 |---:|---|---|

@@ -119,7 +119,7 @@ python3 <skill-dir>/scripts/recover_alpha.py \
   --strict
 ```
 
-The script requires Pillow and NumPy. If the active `python3` lacks them, use the bundled workspace Python reported by `codex_app__load_workspace_dependencies`. Do not silently install packages into the user's environment.
+The script requires Pillow and NumPy. Check the active `python3` before recovery. If either package is missing, use a workspace Python that already provides them; otherwise ask the user before installing from `<skill-dir>/requirements.txt` into an isolated environment. Do not silently modify the user's global Python environment.
 
 Omit `--aspect` when the user did not request one. Accepted forms include `1:1`, `4:5`, `16:9`, or a decimal. The script estimates actual backdrop colors from the border, aligns the right copy to the left, solves alpha against those backdrops, and writes a diagnostic report. Its default `--edge-cleanup auto` removes faint frames and seam residue only inside the guaranteed blank panel margin. Use `--edge-cleanup aggressive` when a visible outer line survives; use `off` only when the requested subject intentionally touches the panel edge.
 

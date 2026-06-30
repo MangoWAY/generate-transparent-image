@@ -1,0 +1,38 @@
+{
+  "name": "generate-transparent-image",
+  "version": "0.2.2-beta.1",
+  "description": "Create robust straight-alpha PNG assets from prompts or reference images.",
+  "author": {
+    "name": "MangoWAY",
+    "url": "https://github.com/MangoWAY"
+  },
+  "homepage": "https://github.com/MangoWAY/generate-transparent-image",
+  "repository": "https://github.com/MangoWAY/generate-transparent-image",
+  "license": "MIT",
+  "keywords": [
+    "transparent-image",
+    "alpha-matting",
+    "background-removal",
+    "image-generation"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Generate Transparent Image",
+    "shortDescription": "Generate and extract clean transparent PNG assets.",
+    "longDescription": "Builds paired or material-aware black/white source masters, recovers straight alpha mathematically, and validates edges on adversarial backgrounds.",
+    "developerName": "MangoWAY",
+    "category": "Design",
+    "capabilities": [
+      "Image generation",
+      "Image processing",
+      "Background removal"
+    ],
+    "websiteURL": "https://github.com/MangoWAY/generate-transparent-image",
+    "defaultPrompt": [
+      "Create a transparent PNG from my prompt.",
+      "Extract the main subject from this image.",
+      "Check this transparent asset for edge artifacts."
+    ],
+    "brandColor": "#111827"
+  }
+}

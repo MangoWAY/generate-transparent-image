@@ -1,0 +1,20 @@
+{
+  "name": "generate-transparent-image",
+  "interface": {
+    "displayName": "Generate Transparent Image"
+  },
+  "plugins": [
+    {
+      "name": "generate-transparent-image",
+      "source": {
+        "source": "local",
+        "path": "./plugins/generate-transparent-image"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Design"
+    }
+  ]
+}
