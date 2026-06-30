@@ -128,7 +128,24 @@ python3 generate-transparent-image/scripts/recover_alpha.py \
 python3 -m unittest discover -s generate-transparent-image/tests -v
 ```
 
-The 14-case suite covers paired and material 2×2 recovery, opaque-core correction, soft-effect priority, semantic and subject registration, edge-frame cleanup, partial-alpha color recovery without white fringes, tinted backdrops, aspect/crop handling, odd-size exports, low-contrast masks, invalid backdrops, and CLI outputs.
+All cases live in [`test_recover_alpha.py`](generate-transparent-image/tests/test_recover_alpha.py):
+
+| # | Case | Regression covered |
+|---:|---|---|
+| 1 | Partial-alpha color recovery | Recovers colored antialiased edges over tinted black/white backdrops without a white fringe |
+| 2 | Subject translation alignment | Finds and corrects an intentionally shifted black/white subject pair |
+| 3 | Aspect validation | Accepts valid ratios and rejects zero, non-finite, negative, and over-wide ratios |
+| 4 | Final canvas fit | Preserves all foreground pixels, padding, and the requested output ratio |
+| 5 | Low-contrast semantic mask | Rejects masks without a usable white-on-black signal |
+| 6 | Invalid paired backdrops | Strict CLI rejects source panels that are not sufficiently black and white |
+| 7 | Odd-size model export | Safely crops a one-pixel source-width discrepancy before splitting panels |
+| 8 | Panel-frame cleanup | Removes weak and strong outer frame lines without eroding the centered subject |
+| 9 | Cleanup opt-out | `--edge-cleanup off` preserves the recovered RGBA unchanged |
+| 10 | Opaque-core correction | Forces semantic solid interiors opaque while leaving soft effects translucent |
+| 11 | Material 2×2 CLI | Emits alpha, semantic masks, adversarial previews, diagnostics, and final PNG |
+| 12 | Core/soft overlap | Gives soft-effect semantics priority when generated masks overlap |
+| 13 | Semantic-mask registration | Recovers an intentionally shifted opaque-core/soft-effect mask pair |
+| 14 | Paired-mode compatibility | Verifies the original black/white paired workflow and CLI outputs still work |
 
 ## Limits
 
